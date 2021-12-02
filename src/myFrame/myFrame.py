@@ -1,9 +1,13 @@
 import wx
 from myFrame.myWxFrame import myWxFrame
+from myObserverPattern import myInfoObserver, myInfo
 
-class myFrame(myWxFrame):
+class myFrame(myWxFrame, myInfoObserver):
     def __init__(self):
-        super().__init__(None)
+        myWxFrame.__init__(self, None)
+        myInfoObserver.__init__(self)
+
+        self.__m_vstrMessage = []
     # End of constructor
 
     def __close(self):
@@ -17,4 +21,24 @@ class myFrame(myWxFrame):
     def handleOnUpdateUI(self, event):
         pass
     # End of myFrame
+
+    def update(self, key: str, oInfo: myInfo):
+        if "Message" == key:
+            strMessage = oInfo.getParam(key)
+            self.__m_vstrMessage.append(strMessage)
+            if len(self.__m_vstrMessage) > 25:
+                self.__m_vstrMessage.pop(0)
+            # End of if-condition
+
+            strText = ""
+            for i in range(len(strText)):
+                strText += self.__m_vstrMessage[i] + "\n"
+            # End of for-loop
+
+            self.m_oMessageTextField.SetLabelText(strText)
+        elif "Event" == key:
+            strMessage = oInfo.getParam(key)
+            wx.MessageBox(strMessage, "Test")
+        # End of if-condition
+    # End of myFrame::update
 # End of class myFrame
