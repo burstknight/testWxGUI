@@ -9,6 +9,7 @@ class myModel(myInfoSubject, Thread):
         Thread.__init__(self, name="Model", daemon=True)
 
         self.__m_isRun = True
+        self.__m_isEvent = False
     # End of constructor
 
     @property
@@ -21,12 +22,27 @@ class myModel(myInfoSubject, Thread):
         self.__m_isRun = isRun
     # End of myModel::isRun
 
+    @property
+    def isEvent(self):
+        return self.__m_isEvent
+    # End of myModel::isEvent
+
+    @isEvent.setter
+    def isEvent(self, isEvent:bool):
+        self.__m_isEvent = isEvent
+    # End of myModel::isEvent
+
     def run(self) -> None:
         print("Run model!")
 
         while(True):
             if(False == self.isRun):
                 break
+            # End of if-condition
+
+            if(True == self.isEvent):
+                self.notifyObserver("Event", "Button is clicked!")
+                self.isEvent = False
             # End of if-condition
 
             iData = randint(0, 9999)
