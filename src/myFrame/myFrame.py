@@ -1,16 +1,22 @@
 import wx
+import time
 from myFrame.myWxFrame import myWxFrame
 from myObserverPattern import myInfoObserver, myInfo
+from myModel import myModel
 
 class myFrame(myWxFrame, myInfoObserver):
-    def __init__(self):
+    def __init__(self, oModel:myModel):
         myWxFrame.__init__(self, None)
         myInfoObserver.__init__(self)
+
+        self.__m_oModel = oModel
 
         self.__m_vstrMessage = []
     # End of constructor
 
     def __close(self):
+        self.__m_oModel.isRun = False
+        time.sleep(1)
         self.Destroy()
     # End of myFrame::close
 
@@ -26,13 +32,13 @@ class myFrame(myWxFrame, myInfoObserver):
         if "Message" == key:
             strMessage = oInfo.getParam(key)
             self.__m_vstrMessage.append(strMessage)
-            if len(self.__m_vstrMessage) > 25:
+            if len(self.__m_vstrMessage) > 12:
                 self.__m_vstrMessage.pop(0)
             # End of if-condition
 
             strText = ""
-            for i in range(len(strText)):
-                strText += self.__m_vstrMessage[i] + "\n"
+            for i in range(len(self.__m_vstrMessage)):
+                strText += self.__m_vstrMessage[i]
             # End of for-loop
         elif "Event" == key:
             strMessage = oInfo.getParam(key)
