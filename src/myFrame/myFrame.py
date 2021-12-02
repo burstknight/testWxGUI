@@ -10,6 +10,7 @@ class myFrame(myWxFrame, myInfoObserver):
         myInfoObserver.__init__(self)
 
         self.__m_oModel = oModel
+        self.__m_isRefresh = False
 
         self.__m_vstrMessage = []
     # End of constructor
@@ -25,7 +26,19 @@ class myFrame(myWxFrame, myInfoObserver):
     # End of myFrame::handeOnClose
     
     def handleOnUpdateUI(self, event):
-        pass
+        if event.Id == self.m_oMessageTextField.GetId():
+            if False == self.__m_isRefresh:
+                return
+            # End of if-condition
+
+            strText = ""
+            for i in range(len(self.__m_vstrMessage)):
+                strText += self.__m_vstrMessage[i]
+            # End of for-loop
+
+            self.m_oMessageTextField.SetValue(strText)
+            self.__m_isRefresh = False
+        # End of if-condition
     # End of myFrame
 
     def handleOnClickedButton(self, event):
@@ -42,10 +55,7 @@ class myFrame(myWxFrame, myInfoObserver):
                 self.__m_vstrMessage.pop(0)
             # End of if-condition
 
-            strText = ""
-            for i in range(len(self.__m_vstrMessage)):
-                strText += self.__m_vstrMessage[i]
-            # End of for-loop
+            self.__m_isRefresh = True
         elif "Event" == key:
             strMessage = oInfo.getParam(key)
             wx.MessageBox(strMessage, "Test")
