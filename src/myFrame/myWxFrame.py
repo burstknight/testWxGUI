@@ -27,7 +27,7 @@ class myWxFrame ( wx.Frame ):
 		bSizer1.Add( self.m_oMessageTextField, 1, wx.ALL|wx.EXPAND, 5 )
 
 		self.m_oButton = wx.Button( self, wx.ID_ANY, u"Click me!", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_oButton.SetFont( wx.Font( 20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
+		self.m_oButton.SetFont( wx.Font( 20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "微軟正黑體" ) )
 
 		bSizer1.Add( self.m_oButton, 0, wx.ALL|wx.EXPAND, 5 )
 
@@ -55,5 +55,6 @@ class myWxFrame ( wx.Frame ):
 
 	def handleOnClickedButton( self, event ):
 		event.Skip()
+
 
 
