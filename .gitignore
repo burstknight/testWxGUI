@@ -1,0 +1,11 @@
+# skip all python binary files
+*.pyc
+
+# skip all files in the directory log
+log/*
+
+# skip all files for VSCode config
+.vscode/*
+
+# skip all tmp files for vim
+*.swp
