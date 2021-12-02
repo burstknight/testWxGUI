@@ -1,3 +1,4 @@
 from myObserverPattern.myInfo import myInfo
 from myObserverPattern.myInfoObserver import myInfoObserver
 from myObserverPattern.myInfoSubject import myInfoSubject
+from myObserverPattern.myObservableInfo import myObservableInfo

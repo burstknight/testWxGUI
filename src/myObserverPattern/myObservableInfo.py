@@ -1,6 +1,6 @@
 from myObserverPattern import myInfo
 
-class myObservablePattern(myInfo):
+class myObservableInfo(myInfo):
     def __init__(self) -> None:
         super().__init__()
         self.__m_strMessage = ""
