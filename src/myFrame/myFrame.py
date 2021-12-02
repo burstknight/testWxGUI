@@ -46,6 +46,9 @@ class myFrame(myWxFrame, myInfoObserver):
             for i in range(len(self.__m_vstrMessage)):
                 strText += self.__m_vstrMessage[i]
             # End of for-loop
+
+            self.m_oMessageTextField.SetValue(strText)
+            self.Update()
         elif "Event" == key:
             strMessage = oInfo.getParam(key)
             wx.MessageBox(strMessage, "Test")
