@@ -28,6 +28,12 @@ class myFrame(myWxFrame, myInfoObserver):
         pass
     # End of myFrame
 
+    def handleOnClickedButton(self, event):
+        if event.Id == self.m_oButton.GetId():
+            self.__m_oModel.isEvent = True
+        # End of if-condition
+    # End of myFrame::handleOnClickedButton
+
     def update(self, key: str, oInfo: myInfo):
         if "Message" == key:
             strMessage = oInfo.getParam(key)
