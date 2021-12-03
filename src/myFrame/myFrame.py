@@ -79,6 +79,9 @@ class myFrame(myWxFrame, myInfoObserver):
                 self.__m_vstrMessage.pop(0)
             # End of if-condition
 
+            """
+            Send an event to update text field, but other thread cannot be blocked.
+            """
             oEvent = myMsgBoxEvent("Test", EVT_UPDATE_DATA)
             wx.PostEvent(self.GetEventHandler(), oEvent)
         elif "Event" == key:
