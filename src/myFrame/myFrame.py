@@ -68,8 +68,10 @@ class myFrame(myWxFrame, myInfoObserver):
     # End of myFrame::handleOnClickedButton
 
     def handleOnMsgEvent(self, event:myMsgBoxEvent):
-        strMessage = event.strMessage
-        wx.MessageBox(strMessage, "Test")
+        if event.GetEventType() == EVT_MSG_ID:
+            strMessage = event.strMessage
+            wx.MessageBox(strMessage, "Test")
+        # End of handleOnMsgEvent
     # End of myFrame::handleOnMsgEvent
 
     def update(self, key: str, oInfo: myInfo):
@@ -90,6 +92,9 @@ class myFrame(myWxFrame, myInfoObserver):
             """
             oEvent = myMsgBoxEvent(strMessage)
             self.ProcessEvent(oEvent)
+
+            oEvent = myMsgBoxEvent("wx.PostEvent() cannot block sener!")
+            wx.PostEvent(self.GetEventHandler(), oEvent)
         # End of if-condition
     # End of myFrame::update
 # End of class myFrame
