@@ -4,6 +4,7 @@ import time
 from myFrame.myWxFrame import myWxFrame
 from myObserverPattern import myInfoObserver, myInfo
 from myModel import myModel
+from threading import get_ident
 
 EVT_MSG_ID = wx.NewId()
 EVT_UPDATE_DATA = wx.NewId()
@@ -35,6 +36,8 @@ class myFrame(myWxFrame, myInfoObserver):
         self.Connect(-1, -1, EVT_MSG_ID, self.handleOnMsgEvent)
         self.Connect(-1, -1, EVT_UPDATE_DATA, self.handleOnMsgEvent)
         self.__m_vstrMessage = []
+        self.__m_iThreadId = get_ident()
+        self.__m_viEventQueue = []
     # End of constructor
 
     def __close(self):
@@ -58,9 +61,15 @@ class myFrame(myWxFrame, myInfoObserver):
     # End of myFrame::handleOnClickedButton
 
     def handleOnMsgEvent(self, event:myMsgBoxEvent):
+        iThreadId = event.GetId()
         if event.GetEventType() == EVT_MSG_ID:
             strMessage = event.strMessage
             wx.MessageBox(strMessage, "Test")
+
+            if iThreadId in self.__m_viEventQueue:
+                index = self.__m_viEventQueue.index(iThreadId)
+                self.__m_viEventQueue.pop(index)
+            # End of if-condion
         elif event.GetEventType() == EVT_UPDATE_DATA:
             strText = ""
             for i in range(len(self.__m_vstrMessage)):
@@ -68,8 +77,44 @@ class myFrame(myWxFrame, myInfoObserver):
             # End of for-loop
 
             self.m_oMessageTextField.SetValue(strText)
+            if iThreadId in self.__m_viEventQueue:
+                index = self.__m_viEventQueue.index(iThreadId)
+                self.__m_viEventQueue.pop(index)
+            # End of if-condion
         # End of handleOnMsgEvent
     # End of myFrame::handleOnMsgEvent
+    
+    def processEvent(self, oEvent:wx.Event, isPerformLater:bool = True):
+        """
+        Description:
+        =========================================================================
+        Send event to handle
+
+        Args:
+        =========================================================================
+        - oEvent:           ptype: wx.Event, the event object
+        - isPerformLater:   ptype: bool, this flag is control that the event will be handled later or is handled immediately 
+
+        Return:
+        ======================================================================
+        - rtype: void
+        """
+        wx.PostEvent(self.GetEventHandler(), oEvent)
+        if True == isPerformLater:
+            return
+        # End of if-condition
+
+        iCurrThreadId = oEvent.Id
+        self.__m_viEventQueue.append(iCurrThreadId)
+
+        while True:
+            if iCurrThreadId == self.__m_iThreadId or iCurrThreadId not in self.__m_viEventQueue:
+                break
+            # End of if-condition
+
+            time.sleep(0.5)
+        # End of while-loop
+    # End of myFrame::processEvent
 
     def update(self, key: str, oInfo: myInfo):
         if "Message" == key:
@@ -83,7 +128,8 @@ class myFrame(myWxFrame, myInfoObserver):
             Send an event to update text field, but other thread cannot be blocked.
             """
             oEvent = myMsgBoxEvent("Test", EVT_UPDATE_DATA)
-            wx.PostEvent(self.GetEventHandler(), oEvent)
+            oEvent.SetId(get_ident())
+            self.processEvent(oEvent)
         elif "Event" == key:
             strMessage = oInfo.getParam(key)
 
@@ -92,10 +138,12 @@ class myFrame(myWxFrame, myInfoObserver):
             The sender will resume after the event is handled.
             """
             oEvent = myMsgBoxEvent(strMessage)
-            self.ProcessEvent(oEvent)
+            oEvent.SetId(get_ident())
+            self.processEvent(oEvent, False)
 
             oEvent = myMsgBoxEvent("wx.PostEvent() cannot block sener!")
-            wx.PostEvent(self.GetEventHandler(), oEvent)
+            oEvent.SetId(get_ident())
+            self.processEvent(oEvent)
         # End of if-condition
     # End of myFrame::update
 # End of class myFrame
