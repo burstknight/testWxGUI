@@ -1,3 +1,4 @@
+from typing import overload
 import wx
 import time
 from myFrame.myWxFrame import myWxFrame
@@ -5,14 +6,15 @@ from myObserverPattern import myInfoObserver, myInfo
 from myModel import myModel
 
 EVT_MSG_ID = wx.NewId()
+EVT_UPDATE_DATA = wx.NewId()
 
 class myMsgBoxEvent(wx.PyEvent):
     """
     This event is degined for show message box
     """
-    def __init__(self, strMessage:str):
+    def __init__(self, strMessage:str, iEventType:int = EVT_MSG_ID):
         wx.PyEvent.__init__(self)
-        self.SetEventType(EVT_MSG_ID)
+        self.SetEventType(iEventType)
 
         self.__m_strMessage = strMessage
     # End of myMsgBoxEvent
@@ -29,9 +31,9 @@ class myFrame(myWxFrame, myInfoObserver):
         myInfoObserver.__init__(self)
 
         self.__m_oModel = oModel
-        self.__m_isRefresh = False
 
         self.Connect(-1, -1, EVT_MSG_ID, self.handleOnMsgEvent)
+        self.Connect(-1, -1, EVT_UPDATE_DATA, self.handleOnMsgEvent)
         self.__m_vstrMessage = []
     # End of constructor
 
@@ -46,19 +48,7 @@ class myFrame(myWxFrame, myInfoObserver):
     # End of myFrame::handeOnClose
     
     def handleOnUpdateUI(self, event):
-        if event.Id == self.m_oMessageTextField.GetId():
-            if False == self.__m_isRefresh:
-                return
-            # End of if-condition
-
-            strText = ""
-            for i in range(len(self.__m_vstrMessage)):
-                strText += self.__m_vstrMessage[i]
-            # End of for-loop
-
-            self.m_oMessageTextField.SetValue(strText)
-            self.__m_isRefresh = False
-        # End of if-condition
+        pass
     # End of myFrame
 
     def handleOnClickedButton(self, event):
@@ -71,6 +61,13 @@ class myFrame(myWxFrame, myInfoObserver):
         if event.GetEventType() == EVT_MSG_ID:
             strMessage = event.strMessage
             wx.MessageBox(strMessage, "Test")
+        elif event.GetEventType() == EVT_UPDATE_DATA:
+            strText = ""
+            for i in range(len(self.__m_vstrMessage)):
+                strText += self.__m_vstrMessage[i]
+            # End of for-loop
+
+            self.m_oMessageTextField.SetValue(strText)
         # End of handleOnMsgEvent
     # End of myFrame::handleOnMsgEvent
 
@@ -82,7 +79,8 @@ class myFrame(myWxFrame, myInfoObserver):
                 self.__m_vstrMessage.pop(0)
             # End of if-condition
 
-            self.__m_isRefresh = True
+            oEvent = myMsgBoxEvent("Test", EVT_UPDATE_DATA)
+            wx.PostEvent(self.GetEventHandler(), oEvent)
         elif "Event" == key:
             strMessage = oInfo.getParam(key)
 
